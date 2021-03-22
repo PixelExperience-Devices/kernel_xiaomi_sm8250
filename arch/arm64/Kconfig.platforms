@@ -428,4 +428,91 @@ config ARCH_ZYNQMP
 	help
 	  This enables support for Xilinx ZynqMP Family
 
+menu "Xiaomi Family"
+config MACH_XIAOMI
+	bool "Xiaomi Family"
+	help
+	  This enables support for XiaoMi Family devices.
+
+if MACH_XIAOMI
+config MACH_XIAOMI_SM8250
+	bool "Xiaomi SM8250 Board"
+	select ARCH_QCOM
+	select ARCH_KONA
+
+config MACH_XIAOMI_J1
+	bool "Cmi platform"
+	select MACH_XIAOMI_SM8250
+	help
+	  This enables support for Xiaomi MI 10 Pro.
+
+config MACH_XIAOMI_J11
+	bool "Lmi, Lmiin and Lmipro platform"
+	select MACH_XIAOMI_SM8250
+	help
+	  This enables support for Xiaomi Redmi K30 Pro / POCO F2 Pro.
+
+config MACH_XIAOMI_J1S
+	bool "Cas platform"
+	select MACH_XIAOMI_SM8250
+	help
+	  This enables support for Xiaomi MI 10 Ultra.
+
+config MACH_XIAOMI_J2
+	bool "Umi platform"
+	select MACH_XIAOMI_SM8250
+	help
+	  This enables support for Xiaomi MI 10.
+
+config MACH_XIAOMI_J2S
+	bool "Thyme platform"
+	select MACH_XIAOMI_SM8250
+	help
+	  This enables support for Xiaomi MI 10S.
+
+config MACH_XIAOMI_J3S
+	bool "Apollo and Apollopro platform"
+	select MACH_XIAOMI_SM8250
+	help
+	  This enables support for Xiaomi MI 10T/Pro / Redmi K30S.
+
+config MACH_XIAOMI_K11A
+	bool "Alioth and AliothIN platform"
+	select MACH_XIAOMI_SM8250
+	help
+	  This enables support for Xiaomi Redmi K40 / POCO F3 / MI 11x.
+
+config MACH_XIAOMI_K81
+	bool "Enuma platform"
+	select MACH_XIAOMI_SM8250
+	help
+	  This enables support for Xiaomi MI Pad 5 Pro 5G.
+
+config MACH_XIAOMI_K81A
+	bool "Elish platform"
+	select MACH_XIAOMI_SM8250
+	help
+	  This enables support for Xiaomi MI Pad 5 Pro.
+
+config MACH_XIAOMI_L11R
+	bool "munch platform"
+	select MACH_XIAOMI_SM8250
+	help
+	  This enables support for Xiaomi Redmi K40S / POCO F4.
+
+config MACH_XIAOMI_L3A
+	bool "Psyche platform"
+	select MACH_XIAOMI_SM8250
+	help
+	  This enables support for Xiaomi MI 12X.
+
+config MACH_XIAOMI_L81A
+	bool "Dagu platform"
+	select BOARD_XIAOMI_SM8250
+	help
+	  This enables support for Xiaomi Pad 5 Pro 12.4.
+
+endif
+endmenu
+
 endmenu
