@@ -60,6 +60,8 @@
 #define FTS_I2C_VTG_MAX_UV                  1800000
 #endif
 
+#define SUPER_RESOLUTION_FACOTR             8
+
 /*****************************************************************************
 * Global variable or extern global variabls/functions
 *****************************************************************************/
@@ -148,6 +150,9 @@ void fts_tp_state_recovery(struct fts_ts_data *ts_data)
 	/* recover TP palm mode state */
 	fts_palm_mode_recovery(ts_data);
 #endif
+	/* set touch in charge mode or not */
+	ts_data->charger_mode = false;
+	queue_work(ts_data->ts_workqueue, &ts_data->power_supply_work);
 	FTS_FUNC_EXIT();
 }
 
@@ -1508,7 +1513,7 @@ static int fts_power_supply_event(struct notifier_block *nb,
 static void fts_power_supply_work(struct work_struct *work)
 {
 	struct fts_ts_data *ts_data = container_of(work, struct fts_ts_data, power_supply_work);
-	int charger_mode;
+	bool charger_mode;
 	int ret;
 
 	if (ts_data == NULL)
@@ -1522,7 +1527,7 @@ static void fts_power_supply_work(struct work_struct *work)
 	pm_stay_awake(ts_data->dev);
 	mutex_lock(&ts_data->power_supply_lock);
 	charger_mode = !!power_supply_is_system_supplied();
-	if (charger_mode != ts_data->charger_mode || ts_data->charger_mode < 0) {
+	if (charger_mode != ts_data->charger_mode) {
 		ts_data->charger_mode = charger_mode;
 		FTS_INFO("%s %d\n", __func__, charger_mode);
 		if (charger_mode) {
@@ -1704,7 +1709,7 @@ static int fts_ts_probe_entry(struct fts_ts_data *ts_data)
 	register_early_suspend(&ts_data->early_suspend);
 #endif
 
-	ts_data->charger_mode = -1;
+	ts_data->charger_mode = false;
 	mutex_init(&ts_data->power_supply_lock);
 	INIT_WORK(&ts_data->power_supply_work, fts_power_supply_work);
 	ts_data->power_supply_notifier.notifier_call = fts_power_supply_event;
@@ -2337,6 +2342,12 @@ static void fts_palm_mode_recovery(struct fts_ts_data *ts_data)
 		FTS_ERROR("set palm sensor cmd failed: %d\n", ts_data->palm_sensor_switch);
 }
 
+static int fts_get_touch_super_resolution_factor(void)
+{
+	FTS_INFO("current super resolution factor is: %d", SUPER_RESOLUTION_FACOTR);
+	return SUPER_RESOLUTION_FACOTR;
+}
+
 #endif
 
 
@@ -2394,6 +2405,7 @@ static int fts_ts_probe(struct spi_device *spi)
 	xiaomi_touch_interfaces.resetMode = fts_reset_mode;
 	xiaomi_touch_interfaces.getModeAll = fts_get_mode_all;
 	xiaomi_touch_interfaces.palm_sensor_write = fts_palm_sensor_write;
+	xiaomi_touch_interfaces.get_touch_super_resolution_factor = fts_get_touch_super_resolution_factor;
 
 	fts_init_touch_mode_data(ts_data);
 	xiaomitouch_register_modedata(&xiaomi_touch_interfaces);

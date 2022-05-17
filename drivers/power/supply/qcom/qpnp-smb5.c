@@ -697,6 +697,7 @@ static int smb5_parse_dt_misc(struct smb5 *chip, struct device_node *node)
 
 	chg->lpd_disabled = chg->lpd_disabled ||
 			of_property_read_bool(node, "qcom,lpd-disable");
+	chg->moisture_detection_enabled = !chg->lpd_disabled;
 
 	chg->use_bq_pump = of_property_read_bool(node,
 				"mi,use-bq-pump");
@@ -1446,6 +1447,7 @@ static enum power_supply_property smb5_usb_props[] = {
 	POWER_SUPPLY_PROP_VOLTAGE_NOW,
 	POWER_SUPPLY_PROP_PD_CURRENT_MAX,
 	POWER_SUPPLY_PROP_CURRENT_MAX,
+	POWER_SUPPLY_PROP_VBUS_DISABLE,
 	POWER_SUPPLY_PROP_TYPE,
 	POWER_SUPPLY_PROP_TYPEC_MODE,
 	POWER_SUPPLY_PROP_TYPEC_POWER_ROLE,
@@ -1467,7 +1469,6 @@ static enum power_supply_property smb5_usb_props[] = {
 	POWER_SUPPLY_PROP_CONNECTOR_TYPE,
 	POWER_SUPPLY_PROP_CONNECTOR_HEALTH,
 	POWER_SUPPLY_PROP_CONNECTOR_TEMP,
-	POWER_SUPPLY_PROP_VBUS_DISABLE,
 	POWER_SUPPLY_PROP_VOLTAGE_MAX,
 	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
 	POWER_SUPPLY_PROP_VOLTAGE_MAX_LIMIT,
@@ -1486,8 +1487,10 @@ static enum power_supply_property smb5_usb_props[] = {
 	POWER_SUPPLY_PROP_APSD_RERUN,
 	POWER_SUPPLY_PROP_APSD_TIMEOUT,
 	POWER_SUPPLY_PROP_APDO_MAX,
+	POWER_SUPPLY_PROP_POWER_MAX,
 	POWER_SUPPLY_PROP_CHARGER_STATUS,
 	POWER_SUPPLY_PROP_INPUT_VOLTAGE_SETTLED,
+	POWER_SUPPLY_PROP_MOISTURE_DETECTION_ENABLE,
 };
 
 static int smb5_usb_get_prop(struct power_supply *psy,
@@ -1501,6 +1504,9 @@ static int smb5_usb_get_prop(struct power_supply *psy,
 	val->intval = 0;
 
 	switch (psp) {
+	case POWER_SUPPLY_PROP_MOISTURE_DETECTION_ENABLE:
+		val->intval = chg->moisture_detection_enabled ? 1 : 0;
+		break;
 	case POWER_SUPPLY_PROP_PRESENT:
 		rc = smblib_get_prop_usb_present(chg, val);
 		break;
@@ -1682,6 +1688,9 @@ static int smb5_usb_get_prop(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_APDO_MAX:
 		val->intval = chg->apdo_max;
 		break;
+	case POWER_SUPPLY_PROP_POWER_MAX:
+		val->intval = smblib_get_adapter_power_max(chg);
+		break;
 	case POWER_SUPPLY_PROP_CHARGER_STATUS:
 		val->intval = 0;
 		if (chg->sdam_base) {
@@ -1726,6 +1735,9 @@ static int smb5_usb_set_prop(struct power_supply *psy,
 	switch (psp) {
 	case POWER_SUPPLY_PROP_FAKE_HVDCP3:
 		chg->fake_hvdcp3 = val->intval;
+		break;
+	case POWER_SUPPLY_PROP_MOISTURE_DETECTION_ENABLE:
+		rc = smblib_enable_moisture_detection(chg, val->intval == 1);
 		break;
 	case POWER_SUPPLY_PROP_PD_CURRENT_MAX:
 		rc = smblib_set_prop_pd_current_max(chg, val);
@@ -1853,6 +1865,7 @@ static int smb5_usb_prop_is_writeable(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_ADAPTER_CC_MODE:
 	case POWER_SUPPLY_PROP_APSD_RERUN:
 	case POWER_SUPPLY_PROP_APDO_MAX:
+	case POWER_SUPPLY_PROP_MOISTURE_DETECTION_ENABLE:
 		return 1;
 	default:
 		break;
@@ -2754,6 +2767,7 @@ static enum power_supply_property smb5_wireless_props[] = {
 	POWER_SUPPLY_PROP_OTG_STATE,
 	POWER_SUPPLY_PROP_WIRELESS_FW_VERSION,
 	POWER_SUPPLY_PROP_CHIP_OK,
+	POWER_SUPPLY_PROP_WLS_CAR_ADAPTER,
 };
 
 static int smb5_wireless_set_prop(struct power_supply *psy,
@@ -2809,7 +2823,6 @@ static int smb5_wireless_set_prop(struct power_supply *psy,
 		break;
 	case POWER_SUPPLY_PROP_REVERSE_PEN_CHG_STATE:
 		chg->reverse_pen_chg_state = val->intval;
-		pen_charge_state_notifier_call_chain(chg->reverse_pen_chg_state == 4, NULL);
 		break;
 	case POWER_SUPPLY_PROP_REVERSE_CHG_STATE:
 		chg->reverse_chg_state = val->intval;
@@ -2822,6 +2835,9 @@ static int smb5_wireless_set_prop(struct power_supply *psy,
 		break;
 	case POWER_SUPPLY_PROP_OTG_STATE:
 		rc = smb5_set_prop_otg_mode(chg, val);
+		break;
+	case POWER_SUPPLY_PROP_WLS_CAR_ADAPTER:
+		chg->wls_car_adapter = val->intval;
 		break;
 	default:
 		return -EINVAL;
@@ -2920,7 +2936,9 @@ static int smb5_wireless_get_prop(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_OTG_STATE:
 		val->intval = 0;
 		break;
-
+	case POWER_SUPPLY_PROP_WLS_CAR_ADAPTER:
+		val->intval = chg->wls_car_adapter;
+		break;
 	default:
 		return -EINVAL;
 	}
@@ -2951,6 +2969,7 @@ static int smb5_wireless_prop_is_writeable(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_REVERSE_CHG_STATE:
 	case POWER_SUPPLY_PROP_REVERSE_PEN_CHG_STATE:
 	case POWER_SUPPLY_PROP_CURRENT_MAX:
+	case POWER_SUPPLY_PROP_WLS_CAR_ADAPTER:
 		return 1;
 	default:
 		break;
@@ -3531,9 +3550,12 @@ static int smb5_configure_typec(struct smb_charger *chg)
 	}
 
 	/*
-	 * Across reboot, standard typeC cables get detected as legacy
-	 * cables due to VBUS attachment prior to CC attach/detach. Reset
-	 * the legacy detection logic by enabling/disabling the typeC mode.
+	 * Across reboot, standard typeC cables get detected as legacy cables
+	 * due to VBUS attachment prior to CC attach/dettach. To handle this,
+	 * "early_usb_attach" flag is used, which assumes that across reboot,
+	 * the cable connected can be standard typeC. However, its jurisdiction
+	 * is limited to PD capable designs only. Hence, for non-PD type designs
+	 * reset legacy cable detection by disabling/enabling typeC mode.
 	 */
 	if (chg->pd_not_supported && (val & TYPEC_LEGACY_CABLE_STATUS_BIT)) {
 		pval.intval = POWER_SUPPLY_TYPEC_PR_NONE;
@@ -5005,6 +5027,7 @@ static int smb5_probe(struct platform_device *pdev)
 	chg->main_fcc_max = -EINVAL;
 	chg->warm_fake_charging = false;
 	chg->fake_dc_on = false;
+	chg->moisture_detection_enabled = true;
 	mutex_init(&chg->adc_lock);
 
 	chg->regmap = dev_get_regmap(chg->dev->parent, NULL);
