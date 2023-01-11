@@ -77,36 +77,6 @@ endif
 endif
 endif
 
-ifeq ($(CONFIG_BOARD_XIAOMI_SM7250),y)
-ifeq ($(CONFIG_BUILD_ARM64_DT_OVERLAY),y)
-
-ifeq ($(CONFIG_BOARD_MONET),y)
-dtbo-$(CONFIG_BOARD_MONET) += \
-                moent-sm7250-overlay.dtbo
-dtb-$(CONFIG_BOARD_MONET) += \
-                moent-sm7250.dtb
-monet-sm7250-overlay.dtbo-base := lito.dtb lito-v2.dtb
-endif
-
-ifeq ($(CONFIG_BOARD_PICASSO),y)
-dtbo-$(CONFIG_BOARD_PICASSO) += \
-                picasso-sm7250-overlay.dtbo
-dtb-$(CONFIG_BOARD_PICASSO) += \
-                picasso-sm7250.dtb
-picasso-sm7250-overlay.dtbo-base := lito.dtb lito-v2.dtb
-endif
-
-ifeq ($(CONFIG_BOARD_VANGOGH),y)
-dtbo-$(CONFIG_BOARD_VANGOGH) += \
-                vangogh-sm7250-overlay.dtbo
-dtb-$(CONFIG_BOARD_VANGOGH) += \
-                vangogh-sm7250.dtb
-vangogh-sm7250-overlay.dtbo-base := lito.dtb lito-v2.dtb
-endif
-
-endif
-endif
-
 else
 ifeq ($(CONFIG_BUILD_ARM64_DT_OVERLAY),y)
         dtbo-$(CONFIG_ARCH_KONA) += \
