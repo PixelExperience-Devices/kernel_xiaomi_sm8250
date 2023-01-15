@@ -28,7 +28,7 @@
 #include "cam_debug_util.h"
 #include "cam_common_util.h"
 
-#ifdef CONFIG_BOARD_PSYCHE
+#ifdef CONFIG_MACH_XIAOMI_L3A
 /* Xiaomi: enlarge from 100 to 120 */
 #define CAM_REQ_MGR_EVENT_MAX 120
 #else

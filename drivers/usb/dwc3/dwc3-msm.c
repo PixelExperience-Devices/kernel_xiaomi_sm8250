@@ -46,7 +46,7 @@
 #include "dbm.h"
 #include "debug.h"
 #include "xhci.h"
-#ifdef CONFIG_BOARD_DAGU
+#ifdef CONFIG_MACH_XIAOMI_L81A
 #include "../pd/ps5169.h"
 #endif
 
@@ -4328,7 +4328,7 @@ static void msm_dwc3_perf_vote_work(struct work_struct *w)
 			msecs_to_jiffies(1000 * PM_QOS_SAMPLE_SEC));
 }
 
-#ifdef CONFIG_BOARD_DAGU
+#ifdef CONFIG_MACH_XIAOMI_L81A
 extern bool has_dp_flag;
 #endif
 
@@ -4450,7 +4450,7 @@ static int dwc3_otg_start_host(struct dwc3_msm *mdwc, int on)
 		schedule_delayed_work(&mdwc->perf_vote_work,
 				msecs_to_jiffies(1000 * PM_QOS_SAMPLE_SEC));
 
-#ifdef CONFIG_BOARD_DAGU
+#ifdef CONFIG_MACH_XIAOMI_L81A
 		if (!has_dp_flag)
 			ps5169_cfg_usb();
 #endif
@@ -4575,7 +4575,7 @@ static int dwc3_otg_start_peripheral(struct dwc3_msm *mdwc, int on)
 		schedule_delayed_work(&mdwc->perf_vote_work,
 				msecs_to_jiffies(1000 * PM_QOS_SAMPLE_SEC));
 
-#ifdef CONFIG_BOARD_DAGU
+#ifdef CONFIG_MACH_XIAOMI_L81A
 		if (!has_dp_flag)
 			ps5169_cfg_usb();
 #endif

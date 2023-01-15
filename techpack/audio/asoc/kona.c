@@ -5685,7 +5685,7 @@ static struct snd_soc_ops msm_mi2s_cs35l41_be_ops = {
 };
 #endif
 
-#ifdef CONFIG_BOARD_XIAOMI
+#ifdef CONFIG_MACH_XIAOMI
 static int cs35l41_init(struct snd_soc_pcm_runtime *rtd)
 {
 #if 0

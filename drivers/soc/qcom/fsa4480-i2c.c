@@ -356,7 +356,7 @@ static int fsa4480_probe(struct i2c_client *i2c,
 {
 	struct fsa4480_priv *fsa_priv;
 	int rc = 0;
-#if IS_ENABLED(CONFIG_BOARD_MUNCH)
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_L11R)
 	union power_supply_propval mode;
 #endif
 
@@ -407,7 +407,7 @@ static int fsa4480_probe(struct i2c_client *i2c,
 
 	BLOCKING_INIT_NOTIFIER_HEAD(&fsa_priv->fsa4480_notifier);
 
-#if IS_ENABLED(CONFIG_BOARD_MUNCH)
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_L11R)
 	/* set usbc_mode initial value */
 	rc = power_supply_get_property(fsa_priv->usb_psy,
 			POWER_SUPPLY_PROP_TYPEC_MODE, &mode);

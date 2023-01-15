@@ -156,7 +156,7 @@ config PSTORE_RAM
 
 config PSTORE_LAST_KMSG
 	bool "export /proc/last_kmsg"
-	default y if BOARD_XIAOMI
+	default y if MACH_XIAOMI
 	depends on PSTORE
 	help
 	  When the option is enabled, pstore will export a proc filesystem

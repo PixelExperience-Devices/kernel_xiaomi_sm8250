@@ -4,7 +4,7 @@ menu "SLA Configuration"
 config SLA_STAIC_COLLECT
 	tristate "SLA Statistics collector"
 	depends on NETFILTER
-	default y if BOARD_XIAOMI
+	default y if MACH_XIAOMI
 	---help---
 	  QTI Smart Link Aggregation for Web Browsing
 

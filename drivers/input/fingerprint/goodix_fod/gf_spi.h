@@ -106,7 +106,7 @@ struct gf_ioc_chip_info {
 /*#define  USE_SPI_BUS  1*/
 			 /*#define GF_FASYNC   1*//*If support fasync mechanism. */
 
-#if IS_ENABLED(CONFIG_BOARD_PSYCHE)
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_L3A)
 #undef GF_PW_CTL
 #else
 #define GF_PW_CTL 1

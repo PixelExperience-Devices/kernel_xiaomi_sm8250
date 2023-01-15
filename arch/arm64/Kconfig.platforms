@@ -434,11 +434,12 @@ config MACH_XIAOMI
 	help
 	  This enables support for XiaoMi Family devices.
 
-if MACH_XIAOMI
 config MACH_XIAOMI_SM8250
 	bool "Xiaomi SM8250 Board"
-	select ARCH_QCOM
-	select ARCH_KONA
+	depends on ARCH_KONA
+	select MACH_XIAOMI
+		help
+		  Support for SM8250-based Xiaomi variants
 
 config MACH_XIAOMI_J1
 	bool "Cmi platform"
@@ -508,11 +509,10 @@ config MACH_XIAOMI_L3A
 
 config MACH_XIAOMI_L81A
 	bool "Dagu platform"
-	select BOARD_XIAOMI_SM8250
+	select MACH_XIAOMI_SM8250
 	help
 	  This enables support for Xiaomi Pad 5 Pro 12.4.
 
-endif
 endmenu
 
 endmenu

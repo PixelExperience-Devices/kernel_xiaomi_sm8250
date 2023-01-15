@@ -76,7 +76,7 @@
 #define N_SPI_MINORS			32	/* ... up to 256 */
 
 
-#if IS_ENABLED(CONFIG_BOARD_PSYCHE)
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_L3A)
 #define MI_FP_3V
 static struct regulator *p_3v0_vreg = NULL;
 static int disable_regulator_3V0(struct regulator *vreg);
@@ -433,7 +433,7 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	gf_nav_event_t nav_event = GF_NAV_NONE;
 #endif
 	int retval = 0;
-#if IS_ENABLED(CONFIG_BOARD_PSYCHE)
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_L3A)
 	int status = 0;
 #endif
 	u8 netlink_route = NETLINK_TEST;
@@ -546,7 +546,7 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		if (gf_dev->device_available == 1) {
 			pr_debug("Sensor has already powered-on.\n");
 		} else {
-#if IS_ENABLED(CONFIG_BOARD_PSYCHE)
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_L3A)
 			status = enable_regulator_3V0(&gf_dev->spi->dev,&p_3v0_vreg);
 			if (status) {
 				pr_err("enable regulator failed and disable it.\n");
@@ -1056,7 +1056,7 @@ static int gf_remove(struct platform_device *pdev)
 	wakeup_source_unregister(fp_wakelock);
 	fp_wakelock = NULL;
 
-#if IS_ENABLED(CONFIG_BOARD_PSYCHE)
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_L3A)
 	disable_regulator_3V0(p_3v0_vreg);
 #endif
 	/* make sure ops on existing fds can abort cleanly */

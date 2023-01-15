@@ -128,7 +128,7 @@ static int cpufreq_thermal_notifier(struct notifier_block *nb,
 	unsigned long clipped_freq = ULONG_MAX, floor_freq = 0;
 	struct cpufreq_cooling_device *cpufreq_cdev;
 
-#ifndef CONFIG_BOARD_XIAOMI
+#ifndef CONFIG_MACH_XIAOMI
 	if (event != CPUFREQ_INCOMPATIBLE)
 #else
 	if (event != CPUFREQ_THERMAL)
