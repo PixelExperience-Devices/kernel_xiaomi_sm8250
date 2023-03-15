@@ -166,7 +166,6 @@ static void sched_boost_disable(int type)
 	next_boost = sched_effective_boost();
 	if (next_boost == prev_boost)
 		return;
-
 	/*
 	 * This boost's refcount becomes zero, so it must
 	 * be disabled. Disable it first and then apply

@@ -367,7 +367,7 @@ alternative_else_nop_endif
 	.if	\el == 0
 alternative_if_not ARM64_UNMAP_KERNEL_AT_EL0
 	ldr	lr, [sp, #S_LR]
-	add	sp, sp, #S_FRAME_SIZE		// restore sp
+	add	sp, sp, #S_FRAME_SIZE 		//restore sp
 	eret
 alternative_else_nop_endif
 #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
@@ -1101,11 +1101,11 @@ alternative_endif
 	.endm
 
 #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
-/*
- * Exception vectors trampoline.
- * The order must match __bp_harden_el1_vectors and the
- * arm64_bp_harden_el1_vectors enum.
- */
+	/*
+	 * Exception vectors trampoline.
+	 * The order must match __bp_harden_el1_vectors and the
+	 * arm64_bp_harden_el1_vectors enum.
+	 */
 	.pushsection ".entry.tramp.text", "ax"
 	.align	11
 ENTRY(tramp_vectors)
@@ -1272,7 +1272,7 @@ ENTRY(__sdei_asm_entry_trampoline)
 	 */
 1:	str	x4, [x1, #(SDEI_EVENT_INTREGS + S_ORIG_ADDR_LIMIT)]
 
-	tramp_data_read_var     x4, __sdei_asm_handler
+	tramp_data_read_var	x4, __sdei_asm_handler
 	br	x4
 ENDPROC(__sdei_asm_entry_trampoline)
 NOKPROBE(__sdei_asm_entry_trampoline)
